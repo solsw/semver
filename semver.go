@@ -26,8 +26,8 @@ type SemVer struct {
 	Build string
 }
 
-// MarshalText implements the encoding.TextMarshaler interface.
-func (v *SemVer) MarshalText() ([]byte, error) {
+// String implements the fmt.Stringer interface.
+func (v *SemVer) String() string {
 	s := fmt.Sprintf("%d.%d.%d", v.Major, v.Minor, v.Patch)
 	if len(v.PreRelease) > 0 {
 		s += "-" + v.PreRelease
@@ -35,7 +35,12 @@ func (v *SemVer) MarshalText() ([]byte, error) {
 	if len(v.Build) > 0 {
 		s += "+" + v.Build
 	}
-	return []byte(s), nil
+	return s
+}
+
+// MarshalText implements the encoding.TextMarshaler interface.
+func (v *SemVer) MarshalText() ([]byte, error) {
+	return []byte(v.String()), nil
 }
 
 // UnmarshalText implements the encoding.TextUnmarshaler interface.

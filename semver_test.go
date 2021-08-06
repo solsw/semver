@@ -5,6 +5,27 @@ import (
 	"testing"
 )
 
+func TestSemVer_String(t *testing.T) {
+	tests := []struct {
+		name string
+		v    *SemVer
+		want string
+	}{
+		{name: "1", v: &SemVer{}, want: "0.0.0"},
+		{name: "2", v: &SemVer{Major: 1, Minor: 2, Patch: 3}, want: "1.2.3"},
+		{name: "3", v: &SemVer{Major: 1, Minor: 2, Patch: 3, PreRelease: "preRelease"}, want: "1.2.3-preRelease"},
+		{name: "4", v: &SemVer{Major: 1, Minor: 2, Patch: 3, Build: "build"}, want: "1.2.3+build"},
+		{name: "5", v: &SemVer{Major: 1, Minor: 2, Patch: 3, PreRelease: "preRelease", Build: "build"}, want: "1.2.3-preRelease+build"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.v.String(); got != tt.want {
+				t.Errorf("SemVer.String() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestSemVer_MarshalText(t *testing.T) {
 	tests := []struct {
 		name    string
