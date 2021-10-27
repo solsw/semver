@@ -7,9 +7,12 @@ import (
 
 var (
 	ErrMalformedSemVer = errors.New("malformed semver")
+	ErrNoSemVer        = errors.New("no semver")
 )
 
-// SemVer represents Semantic Versioning Specification (https://semver.org/#semantic-versioning-specification-semver).
+// SemVer represents Semantic Versioning Specification
+// (https://semver.org/#semantic-versioning-specification-semver).
+// SemVer's zero value is "0.0.0" version.
 type SemVer struct {
 	// major version (https://semver.org/#spec-item-8)
 	Major int
@@ -52,7 +55,11 @@ func (v *SemVer) UnmarshalText(text []byte) error {
 
 // IsValid reports whether 'v' is valid (https://semver.org/#semantic-versioning-specification-semver).
 func (v *SemVer) IsValid() bool {
-	return Valid(v)
+	r, err := Valid(v)
+	if err != nil {
+		return false
+	}
+	return r
 }
 
 // CompareTo compares 'v' with 'other' (https://semver.org/#spec-item-11).

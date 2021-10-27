@@ -1,15 +1,17 @@
 package semver
 
 import (
-	"math"
 	"strconv"
 	"strings"
 )
 
-// Compare compares 'sv1' with 'sv2' (see https://semver.org/#spec-item-11).
+// Compare compares 'sv1' with 'sv2' (https://semver.org/#spec-item-11).
 // Compare returns -1 if 'sv1' is less than 'sv2', 0 if 'sv1' is equal to 'sv2', 1 if 'sv1' is greater than 'sv2'.
 func Compare(sv1, sv2 *SemVer) (int, error) {
-	if !(Valid(sv1) && Valid(sv2)) {
+	if sv1 == nil || sv2 == nil {
+		return 0, ErrNoSemVer
+	}
+	if !(ValidMust(sv1) && ValidMust(sv2)) {
 		return 0, ErrMalformedSemVer
 	}
 	// https://semver.org/#spec-item-11
@@ -25,11 +27,29 @@ func Compare(sv1, sv2 *SemVer) (int, error) {
 	return comparePreRelease(sv1.PreRelease, sv2.PreRelease), nil
 }
 
+// Less reports whether 'sv1' is less than 'sv2' (https://semver.org/#spec-item-11).
+// If 'sv1' or/and 'sv2' is/are invalid, Less panics.
+// Less is intended to be used with sort package.
+func Less(sv1, sv2 *SemVer) bool {
+	i, err := Compare(sv1, sv2)
+	if err != nil {
+		panic(err)
+	}
+	return i < 0
+}
+
 func boolToCompareResult(b bool) int {
 	if b {
 		return 1
 	}
 	return -1
+}
+
+func minInt(i, j int) int {
+	if i < j {
+		return i
+	}
+	return j
 }
 
 func comparePreRelease(pr1, pr2 string) int {
@@ -44,7 +64,7 @@ func comparePreRelease(pr1, pr2 string) int {
 	}
 	ids1 := strings.Split(pr1, ".")
 	ids2 := strings.Split(pr2, ".")
-	for i := 0; i < int(math.Min(float64(len(ids1)), float64(len(ids2)))); i++ {
+	for i := 0; i < minInt(len(ids1), len(ids2)); i++ {
 		n1, er1 := strconv.Atoi(ids1[i])
 		n2, er2 := strconv.Atoi(ids2[i])
 		if er1 == nil && er2 == nil && n1 != n2 {

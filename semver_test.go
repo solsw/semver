@@ -1,7 +1,6 @@
 package semver
 
 import (
-	"reflect"
 	"testing"
 )
 
@@ -12,43 +11,18 @@ func TestSemVer_String(t *testing.T) {
 		want string
 	}{
 		{name: "1", v: &SemVer{}, want: "0.0.0"},
-		{name: "2", v: &SemVer{Major: 1, Minor: 2, Patch: 3}, want: "1.2.3"},
-		{name: "3", v: &SemVer{Major: 1, Minor: 2, Patch: 3, PreRelease: "preRelease"}, want: "1.2.3-preRelease"},
-		{name: "4", v: &SemVer{Major: 1, Minor: 2, Patch: 3, Build: "build"}, want: "1.2.3+build"},
-		{name: "5", v: &SemVer{Major: 1, Minor: 2, Patch: 3, PreRelease: "preRelease", Build: "build"}, want: "1.2.3-preRelease+build"},
+		{name: "2", v: &SemVer{Minor: 2, Patch: 3}, want: "0.2.3"},
+		{name: "3", v: &SemVer{Major: 1, Patch: 3}, want: "1.0.3"},
+		{name: "4", v: &SemVer{Major: 1, Minor: 2}, want: "1.2.0"},
+		{name: "5", v: &SemVer{Major: 1, Minor: 2, Patch: 3}, want: "1.2.3"},
+		{name: "6", v: &SemVer{Major: 1, Minor: 2, Patch: 3, PreRelease: "preRelease"}, want: "1.2.3-preRelease"},
+		{name: "7", v: &SemVer{Major: 1, Minor: 2, Patch: 3, Build: "build"}, want: "1.2.3+build"},
+		{name: "8", v: &SemVer{Major: 1, Minor: 2, Patch: 3, PreRelease: "preRelease", Build: "build"}, want: "1.2.3-preRelease+build"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.v.String(); got != tt.want {
 				t.Errorf("SemVer.String() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestSemVer_MarshalText(t *testing.T) {
-	tests := []struct {
-		name    string
-		v       *SemVer
-		want    string
-		wantErr bool
-	}{
-		{name: "1", v: &SemVer{}, want: "0.0.0"},
-		{name: "2", v: &SemVer{Major: 1, Minor: 2, Patch: 3}, want: "1.2.3"},
-		{name: "3", v: &SemVer{Major: 1, Minor: 2, Patch: 3, PreRelease: "preRelease"}, want: "1.2.3-preRelease"},
-		{name: "4", v: &SemVer{Major: 1, Minor: 2, Patch: 3, Build: "build"}, want: "1.2.3+build"},
-		{name: "5", v: &SemVer{Major: 1, Minor: 2, Patch: 3, PreRelease: "preRelease", Build: "build"}, want: "1.2.3-preRelease+build"},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := tt.v.MarshalText()
-			if (err != nil) != tt.wantErr {
-				t.Errorf("SemVer.MarshalText() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			sgot := string(got)
-			if !reflect.DeepEqual(sgot, tt.want) {
-				t.Errorf("SemVer.MarshalText() = %s, want %s", sgot, tt.want)
 			}
 		})
 	}
@@ -87,9 +61,9 @@ func TestSemVer_UnmarshalText(t *testing.T) {
 			if (err != nil) != tt.wantErr {
 				t.Errorf("SemVer.UnmarshalText() error = %v, wantErr %v", err, tt.wantErr)
 			}
-			if err != nil && tt.wantErr {
-				t.Logf("SemVer.UnmarshalText() error = %v", err)
-			}
+			// if err != nil && tt.wantErr {
+			// 	t.Logf("SemVer.UnmarshalText() error = %v", err)
+			// }
 		})
 	}
 }

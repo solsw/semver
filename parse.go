@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// Parse parses version string.
 func Parse(s string) (*SemVer, error) {
 	ss := strings.SplitN(s, ".", 3)
 	if len(ss) < 3 {
@@ -12,10 +13,10 @@ func Parse(s string) (*SemVer, error) {
 	}
 	var sv SemVer
 	var err error
-	if sv.Major, err = stringToVersion(ss[0]); err != nil {
+	if sv.Major, err = strToVersionNumber(ss[0]); err != nil {
 		return nil, err
 	}
-	if sv.Minor, err = stringToVersion(ss[1]); err != nil {
+	if sv.Minor, err = strToVersionNumber(ss[1]); err != nil {
 		return nil, err
 	}
 	if err = ss2ToPatchPreReleaseBuild(&sv, ss[2]); err != nil {
@@ -24,25 +25,32 @@ func Parse(s string) (*SemVer, error) {
 	return &sv, nil
 }
 
-func stringToVersion(s string) (int, error) {
+// ParseMust parses version string.
+// ParseMust panics in case of parsing error.
+func ParseMust(s string) *SemVer {
+	sv, err := Parse(s)
+	if err != nil {
+		panic(err)
+	}
+	return sv
+}
+
+func strToVersionNumber(s string) (int, error) {
 	if len(s) == 0 {
-		// https://semver.org/#spec-item-2
 		return 0, ErrMalformedSemVer
 	}
+	// https://semver.org/#spec-item-2
 	if s == "0" {
 		return 0, nil
 	}
 	if strings.HasPrefix(s, "0") {
-		// https://semver.org/#spec-item-2
 		return 0, ErrMalformedSemVer
 	}
 	ver, err := strconv.Atoi(s)
 	if err != nil {
-		// https://semver.org/#spec-item-2
 		return 0, err
 	}
 	if ver < 0 {
-		// https://semver.org/#spec-item-2
 		return 0, ErrMalformedSemVer
 	}
 	return ver, nil
@@ -65,7 +73,7 @@ func ss2ToPatchPreReleaseBuild(sv *SemVer, ss2 string) error {
 			return err
 		}
 	}
-	if sv.Patch, err = stringToVersion(patch); err != nil {
+	if sv.Patch, err = strToVersionNumber(patch); err != nil {
 		return err
 	}
 	return nil
