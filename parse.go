@@ -6,28 +6,28 @@ import (
 )
 
 // Parse parses version string.
-func Parse(s string) (*SemVer, error) {
+func Parse(s string) (SemVer, error) {
 	ss := strings.SplitN(s, ".", 3)
 	if len(ss) < 3 {
-		return nil, ErrMalformedSemVer
+		return SemVer{}, ErrMalformedSemVer
 	}
 	var sv SemVer
 	var err error
 	if sv.Major, err = strToVersionNumber(ss[0]); err != nil {
-		return nil, err
+		return SemVer{}, err
 	}
 	if sv.Minor, err = strToVersionNumber(ss[1]); err != nil {
-		return nil, err
+		return SemVer{}, err
 	}
 	if err = ss2ToPatchPreReleaseBuild(&sv, ss[2]); err != nil {
-		return nil, err
+		return SemVer{}, err
 	}
-	return &sv, nil
+	return sv, nil
 }
 
 // ParseMust parses version string.
 // ParseMust panics in case of parsing error.
-func ParseMust(s string) *SemVer {
+func ParseMust(s string) SemVer {
 	sv, err := Parse(s)
 	if err != nil {
 		panic(err)

@@ -27,7 +27,7 @@ type SemVer struct {
 }
 
 // String implements the fmt.Stringer interface.
-func (v *SemVer) String() string {
+func (v SemVer) String() string {
 	s := fmt.Sprintf("%d.%d.%d", v.Major, v.Minor, v.Patch)
 	if len(v.PreRelease) > 0 {
 		s += "-" + v.PreRelease
@@ -39,7 +39,7 @@ func (v *SemVer) String() string {
 }
 
 // MarshalText implements the encoding.TextMarshaler interface.
-func (v *SemVer) MarshalText() ([]byte, error) {
+func (v SemVer) MarshalText() ([]byte, error) {
 	return []byte(v.String()), nil
 }
 
@@ -49,21 +49,17 @@ func (v *SemVer) UnmarshalText(text []byte) error {
 	if err != nil {
 		return err
 	}
-	*v = *sv
+	*v = sv
 	return nil
 }
 
 // IsValid reports whether 'v' is valid (https://semver.org/#semantic-versioning-specification-semver).
-func (v *SemVer) IsValid() bool {
-	r, err := Valid(v)
-	if err != nil {
-		return false
-	}
-	return r
+func (v SemVer) IsValid() bool {
+	return Valid(v)
 }
 
 // CompareTo compares 'v' with 'other' (https://semver.org/#spec-item-11).
 // CompareTo returns -1 if 'v' is less than 'other', 0 if 'v' is equal to 'other', 1 if 'v' is greater than 'other'.
-func (v *SemVer) CompareTo(other *SemVer) (int, error) {
+func (v SemVer) CompareTo(other SemVer) (int, error) {
 	return Compare(v, other)
 }

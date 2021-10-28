@@ -7,17 +7,17 @@ import (
 func TestSemVer_String(t *testing.T) {
 	tests := []struct {
 		name string
-		v    *SemVer
+		v    SemVer
 		want string
 	}{
-		{name: "1", v: &SemVer{}, want: "0.0.0"},
-		{name: "2", v: &SemVer{Minor: 2, Patch: 3}, want: "0.2.3"},
-		{name: "3", v: &SemVer{Major: 1, Patch: 3}, want: "1.0.3"},
-		{name: "4", v: &SemVer{Major: 1, Minor: 2}, want: "1.2.0"},
-		{name: "5", v: &SemVer{Major: 1, Minor: 2, Patch: 3}, want: "1.2.3"},
-		{name: "6", v: &SemVer{Major: 1, Minor: 2, Patch: 3, PreRelease: "preRelease"}, want: "1.2.3-preRelease"},
-		{name: "7", v: &SemVer{Major: 1, Minor: 2, Patch: 3, Build: "build"}, want: "1.2.3+build"},
-		{name: "8", v: &SemVer{Major: 1, Minor: 2, Patch: 3, PreRelease: "preRelease", Build: "build"}, want: "1.2.3-preRelease+build"},
+		{name: "1", v: SemVer{}, want: "0.0.0"},
+		{name: "2", v: SemVer{Minor: 2, Patch: 3}, want: "0.2.3"},
+		{name: "3", v: SemVer{Major: 1, Patch: 3}, want: "1.0.3"},
+		{name: "4", v: SemVer{Major: 1, Minor: 2}, want: "1.2.0"},
+		{name: "5", v: SemVer{Major: 1, Minor: 2, Patch: 3}, want: "1.2.3"},
+		{name: "6", v: SemVer{Major: 1, Minor: 2, Patch: 3, PreRelease: "preRelease"}, want: "1.2.3-preRelease"},
+		{name: "7", v: SemVer{Major: 1, Minor: 2, Patch: 3, Build: "build"}, want: "1.2.3+build"},
+		{name: "8", v: SemVer{Major: 1, Minor: 2, Patch: 3, PreRelease: "preRelease", Build: "build"}, want: "1.2.3-preRelease+build"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

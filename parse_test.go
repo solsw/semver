@@ -12,13 +12,13 @@ func TestParse(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *SemVer
+		want    SemVer
 		wantErr bool
 	}{
-		{name: "00", args: args{}, wantErr: true},
-		{name: "01", args: args{s: "1.0.0-"}, wantErr: true},
-		{name: "1", args: args{s: "1.2.3"}, want: &SemVer{Major: 1, Minor: 2, Patch: 3}},
-		{name: "2", args: args{s: "1.0.0-x-y-z.-"}, want: &SemVer{Major: 1, PreRelease: "x-y-z.-"}},
+		{name: "01", args: args{}, wantErr: true},
+		{name: "02", args: args{s: "1.0.0-"}, wantErr: true},
+		{name: "1", args: args{s: "1.2.3"}, want: SemVer{Major: 1, Minor: 2, Patch: 3}},
+		{name: "2", args: args{s: "1.0.0-x-y-z.-"}, want: SemVer{Major: 1, PreRelease: "x-y-z.-"}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -6,22 +6,8 @@ import (
 )
 
 // Valid reports whether 'sv' is valid (https://semver.org/#semantic-versioning-specification-semver).
-func Valid(sv *SemVer) (bool, error) {
-	if sv == nil {
-		return false, ErrNoSemVer
-	}
-	return sv.Major >= 0 && sv.Minor >= 0 && sv.Patch >= 0 && validExt(sv.PreRelease, true) == nil && validExt(sv.Build, false) == nil,
-		nil
-}
-
-// ValidMust reports whether 'sv' is valid (https://semver.org/#semantic-versioning-specification-semver).
-// ValidMust panics in case of validation error.
-func ValidMust(sv *SemVer) bool {
-	r, err := Valid(sv)
-	if err != nil {
-		panic(err)
-	}
-	return r
+func Valid(sv SemVer) bool {
+	return sv.Major >= 0 && sv.Minor >= 0 && sv.Patch >= 0 && validExt(sv.PreRelease, true) == nil && validExt(sv.Build, false) == nil
 }
 
 func validExt(ext string, preRelease bool) error {
