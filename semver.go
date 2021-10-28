@@ -7,7 +7,6 @@ import (
 
 var (
 	ErrMalformedSemVer = errors.New("malformed semver")
-	ErrNoSemVer        = errors.New("no semver")
 )
 
 // SemVer represents Semantic Versioning Specification
