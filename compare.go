@@ -53,19 +53,23 @@ func comparePreRelease(pr1, pr2 string) int {
 	for i := 0; i < minInt(len(ids1), len(ids2)); i++ {
 		n1, er1 := strconv.Atoi(ids1[i])
 		n2, er2 := strconv.Atoi(ids2[i])
+		// https://semver.org/#spec-item-11 (4.1)
 		if er1 == nil && er2 == nil && n1 != n2 {
 			return boolToCompareResult(n1 > n2)
 		}
+		// https://semver.org/#spec-item-11 (4.3)
 		if er1 == nil && er2 != nil {
 			return -1
 		}
 		if er1 != nil && er2 == nil {
 			return 1
 		}
+		// https://semver.org/#spec-item-11 (4.2)
 		if ids1[i] != ids2[i] {
 			return boolToCompareResult(ids1[i] > ids2[i])
 		}
 	}
+	// https://semver.org/#spec-item-11 (4.4)
 	if len(ids1) < len(ids2) {
 		return -1
 	}
