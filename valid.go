@@ -1,13 +1,27 @@
 package semver
 
 import (
+	"errors"
 	"strconv"
 	"strings"
 )
 
-// Valid reports whether 'sv' is valid (https://semver.org/#semantic-versioning-specification-semver).
-func Valid(sv SemVer) bool {
-	return sv.Major >= 0 && sv.Minor >= 0 && sv.Patch >= 0 && validExt(sv.PreRelease, true) == nil && validExt(sv.Build, false) == nil
+// Valid checks 'sv' for validity (https://semver.org/#semantic-versioning-specification-semver).
+// If 'sv' is not valid corresponding error is reurned.
+func Valid(sv SemVer) error {
+	// https://semver.org/#spec-item-2
+	if sv.Major < 0 || sv.Minor < 0 || sv.Patch < 0 {
+		return errors.New("malformed semver")
+	}
+	// https://semver.org/#spec-item-9
+	if err := validExt(sv.PreRelease, true); err != nil {
+		return err
+	}
+	// https://semver.org/#spec-item-10
+	if err := validExt(sv.Build, false); err != nil {
+		return err
+	}
+	return nil
 }
 
 func validExt(ext string, preRelease bool) error {
@@ -26,21 +40,21 @@ func validIdent(ident string, preRelease bool) error {
 	// https://semver.org/#spec-item-9
 	// https://semver.org/#spec-item-10
 	if len(ident) == 0 {
-		return ErrMalformedSemVer
+		return errors.New("malformed semver")
 	}
 	if ident == "0" {
 		return nil
 	}
 	for _, r := range ident {
 		if !(('0' <= r && r <= '9') || ('A' <= r && r <= 'Z') || ('a' <= r && r <= 'z') || r == '-') {
-			return ErrMalformedSemVer
+			return errors.New("malformed semver")
 		}
 	}
 	if preRelease {
 		if _, err := strconv.Atoi(ident); err == nil {
 			// numeric identifier
 			if strings.HasPrefix(ident, "0") {
-				return ErrMalformedSemVer
+				return errors.New("malformed semver")
 			}
 		}
 	}

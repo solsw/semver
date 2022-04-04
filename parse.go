@@ -1,15 +1,16 @@
 package semver
 
 import (
+	"errors"
 	"strconv"
 	"strings"
 )
 
-// Parse parses version string.
+// Parse converts the version string to a SemVer.
 func Parse(s string) (SemVer, error) {
 	ss := strings.SplitN(s, ".", 3)
 	if len(ss) < 3 {
-		return SemVer{}, ErrMalformedSemVer
+		return SemVer{}, errors.New("malformed semver")
 	}
 	var sv SemVer
 	var err error
@@ -25,8 +26,7 @@ func Parse(s string) (SemVer, error) {
 	return sv, nil
 }
 
-// ParseMust parses version string.
-// ParseMust panics in case of parsing error.
+// ParseMust is like Parse but panics in case of an error.
 func ParseMust(s string) SemVer {
 	sv, err := Parse(s)
 	if err != nil {
@@ -37,21 +37,21 @@ func ParseMust(s string) SemVer {
 
 func strToVersionNumber(s string) (int, error) {
 	if len(s) == 0 {
-		return 0, ErrMalformedSemVer
+		return 0, errors.New("malformed semver")
 	}
 	// https://semver.org/#spec-item-2
 	if s == "0" {
 		return 0, nil
 	}
 	if strings.HasPrefix(s, "0") {
-		return 0, ErrMalformedSemVer
+		return 0, errors.New("malformed semver")
 	}
 	ver, err := strconv.Atoi(s)
 	if err != nil {
 		return 0, err
 	}
 	if ver < 0 {
-		return 0, ErrMalformedSemVer
+		return 0, errors.New("malformed semver")
 	}
 	return ver, nil
 }
@@ -60,7 +60,7 @@ func ss2ToPatchPreReleaseBuild(sv *SemVer, ss2 string) error {
 	extIdx := strings.IndexAny(ss2, "-+")
 	if extIdx == 0 {
 		// no Patch
-		return ErrMalformedSemVer
+		return errors.New("malformed semver")
 	}
 	var err error
 	var patch string
@@ -81,19 +81,19 @@ func ss2ToPatchPreReleaseBuild(sv *SemVer, ss2 string) error {
 
 func extToPreReleaseBuild(sv *SemVer, ext string, noPreRelease bool) error {
 	if len(ext) == 0 {
-		return ErrMalformedSemVer
+		return errors.New("malformed semver")
 	}
 	if noPreRelease {
 		sv.Build = ext
 	} else {
 		ee := strings.SplitN(ext, "+", 2)
 		if len(ee[0]) == 0 {
-			return ErrMalformedSemVer
+			return errors.New("malformed semver")
 		}
 		sv.PreRelease = ee[0]
 		if len(ee) > 1 {
 			if len(ee[1]) == 0 {
-				return ErrMalformedSemVer
+				return errors.New("malformed semver")
 			}
 			sv.Build = ee[1]
 		}

@@ -61,9 +61,6 @@ func TestSemVer_UnmarshalText(t *testing.T) {
 			if (err != nil) != tt.wantErr {
 				t.Errorf("SemVer.UnmarshalText() error = %v, wantErr %v", err, tt.wantErr)
 			}
-			// if err != nil && tt.wantErr {
-			// 	t.Logf("SemVer.UnmarshalText() error = %v", err)
-			// }
 		})
 	}
 }

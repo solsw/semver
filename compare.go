@@ -6,10 +6,13 @@ import (
 )
 
 // Compare compares 'sv1' with 'sv2' (https://semver.org/#spec-item-11).
-// Compare returns -1 if 'sv1' is less than 'sv2', 0 if 'sv1' is equal to 'sv2', 1 if 'sv1' is greater than 'sv2'.
+// Compare returns -1 if 'sv1' is less than 'sv2', 0 if 'sv1' is equal to 'sv2', 1 if 'sv1' is more than 'sv2'.
 func Compare(sv1, sv2 SemVer) (int, error) {
-	if !(Valid(sv1) && Valid(sv2)) {
-		return 0, ErrMalformedSemVer
+	if err := Valid(sv1); err != nil {
+		return 0, err
+	}
+	if err := Valid(sv2); err != nil {
+		return 0, err
 	}
 	// https://semver.org/#spec-item-11
 	if sv1.Major != sv2.Major {
@@ -24,18 +27,22 @@ func Compare(sv1, sv2 SemVer) (int, error) {
 	return comparePreRelease(sv1.PreRelease, sv2.PreRelease), nil
 }
 
+// Less reports whether 'sv1' is less than 'sv2' (https://semver.org/#spec-item-11).
+// If 'sv1' or/and 'sv2' is/are invalid, Less panics.
+// Less is intended for use with sort package.
+func Less(sv1, sv2 SemVer) bool {
+	r, err := Compare(sv1, sv2)
+	if err != nil {
+		panic(err)
+	}
+	return r < 0
+}
+
 func boolToCompareResult(b bool) int {
 	if b {
 		return 1
 	}
 	return -1
-}
-
-func minInt(i, j int) int {
-	if i < j {
-		return i
-	}
-	return j
 }
 
 func comparePreRelease(pr1, pr2 string) int {
@@ -50,7 +57,11 @@ func comparePreRelease(pr1, pr2 string) int {
 	}
 	ids1 := strings.Split(pr1, ".")
 	ids2 := strings.Split(pr2, ".")
-	for i := 0; i < minInt(len(ids1), len(ids2)); i++ {
+	min := len(ids1)
+	if len(ids2) < min {
+		min = len(ids2)
+	}
+	for i := 0; i < min; i++ {
 		n1, er1 := strconv.Atoi(ids1[i])
 		n2, er2 := strconv.Atoi(ids2[i])
 		// https://semver.org/#spec-item-11 (4.1)
@@ -77,15 +88,4 @@ func comparePreRelease(pr1, pr2 string) int {
 		return 1
 	}
 	return 0
-}
-
-// Less reports whether 'sv1' is less than 'sv2' (https://semver.org/#spec-item-11).
-// If 'sv1' or/and 'sv2' is/are invalid, Less panics.
-// Less is intended for use with "sort" package.
-func Less(sv1, sv2 SemVer) bool {
-	i, err := Compare(sv1, sv2)
-	if err != nil {
-		panic(err)
-	}
-	return i < 0
 }

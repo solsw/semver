@@ -1,12 +1,7 @@
 package semver
 
 import (
-	"errors"
 	"fmt"
-)
-
-var (
-	ErrMalformedSemVer = errors.New("malformed semver")
 )
 
 // SemVer represents Semantic Versioning Specification
@@ -54,11 +49,29 @@ func (v *SemVer) UnmarshalText(text []byte) error {
 
 // IsValid reports whether 'v' is valid (https://semver.org/#semantic-versioning-specification-semver).
 func (v SemVer) IsValid() bool {
-	return Valid(v)
+	return Valid(v) == nil
 }
 
 // CompareTo compares 'v' with 'other' (https://semver.org/#spec-item-11).
-// CompareTo returns -1 if 'v' is less than 'other', 0 if 'v' is equal to 'other', 1 if 'v' is greater than 'other'.
+// CompareTo returns -1 if 'v' is less than 'other', 0 if 'v' is equal to 'other', 1 if 'v' is more than 'other'.
 func (v SemVer) CompareTo(other SemVer) (int, error) {
 	return Compare(v, other)
+}
+
+// LessThan determines whether 'v' is less than 'other'.
+func (v SemVer) LessThan(other SemVer) (bool, error) {
+	r, err := Compare(v, other)
+	return r < 0, err
+}
+
+// EqualTo determines whether 'v' is equal to 'other'.
+func (v SemVer) EqualTo(other SemVer) (bool, error) {
+	r, err := Compare(v, other)
+	return r == 0, err
+}
+
+// MoreThan determines whether 'v' is more than 'other'.
+func (v SemVer) MoreThan(other SemVer) (bool, error) {
+	r, err := Compare(v, other)
+	return r > 0, err
 }
