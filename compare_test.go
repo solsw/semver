@@ -4,6 +4,11 @@ import (
 	"testing"
 )
 
+func parseMust(s string) SemVer {
+	sv, _ := Parse(s)
+	return sv
+}
+
 func TestCompare(t *testing.T) {
 	type args struct {
 		sv1 SemVer
@@ -33,12 +38,12 @@ func TestCompare(t *testing.T) {
 		{name: "12", args: args{sv1: SemVer{PreRelease: "a"}, sv2: SemVer{PreRelease: "b"}}, want: -1},
 		{name: "13", args: args{sv1: SemVer{PreRelease: "a"}, sv2: SemVer{PreRelease: "a.b"}}, want: -1},
 		{name: "14", args: args{sv1: SemVer{PreRelease: "1.2.a"}, sv2: SemVer{PreRelease: "1.2"}}, want: 1},
-		{name: "15", args: args{sv1: ParseMust("1.2.3"), sv2: ParseMust("1.2.3")}, want: 0},
-		{name: "16", args: args{sv1: ParseMust("1.2.3"), sv2: ParseMust("2.1.8")}, want: -1},
-		{name: "17", args: args{sv1: ParseMust("1.2.3"), sv2: ParseMust("1.1.8")}, want: 1},
-		{name: "18", args: args{sv1: ParseMust("1.2.3"), sv2: ParseMust("1.2.8")}, want: -1},
-		{name: "19", args: args{sv1: ParseMust("1.0.0-alpha"), sv2: ParseMust("1.0.0")}, want: -1},
-		{name: "20", args: args{sv1: ParseMust("1.0.0+alpha"), sv2: ParseMust("1.0.0")}, want: 0},
+		{name: "15", args: args{sv1: parseMust("1.2.3"), sv2: parseMust("1.2.3")}, want: 0},
+		{name: "16", args: args{sv1: parseMust("1.2.3"), sv2: parseMust("2.1.8")}, want: -1},
+		{name: "17", args: args{sv1: parseMust("1.2.3"), sv2: parseMust("1.1.8")}, want: 1},
+		{name: "18", args: args{sv1: parseMust("1.2.3"), sv2: parseMust("1.2.8")}, want: -1},
+		{name: "19", args: args{sv1: parseMust("1.0.0-alpha"), sv2: parseMust("1.0.0")}, want: -1},
+		{name: "20", args: args{sv1: parseMust("1.0.0+alpha"), sv2: parseMust("1.0.0")}, want: 0},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

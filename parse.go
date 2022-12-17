@@ -26,15 +26,6 @@ func Parse(s string) (SemVer, error) {
 	return sv, nil
 }
 
-// ParseMust is like Parse but panics in case of an error.
-func ParseMust(s string) SemVer {
-	sv, err := Parse(s)
-	if err != nil {
-		panic(err)
-	}
-	return sv
-}
-
 func strToVersionNumber(s string) (int, error) {
 	if len(s) == 0 {
 		return 0, errors.New("malformed semver")
