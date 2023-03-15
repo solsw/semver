@@ -5,8 +5,11 @@ import (
 	"strings"
 )
 
-// Compare compares 'sv1' with 'sv2' (https://semver.org/#spec-item-11).
+// Compare [compares] 'sv1' with 'sv2'.
+//
 // Compare returns -1 if 'sv1' is less than 'sv2', 0 if 'sv1' is equal to 'sv2', 1 if 'sv1' is more than 'sv2'.
+//
+// [compares]: https://semver.org/#spec-item-11
 func Compare(sv1, sv2 SemVer) (int, error) {
 	if err := Valid(sv1); err != nil {
 		return 0, err
@@ -27,9 +30,12 @@ func Compare(sv1, sv2 SemVer) (int, error) {
 	return comparePreRelease(sv1.PreRelease, sv2.PreRelease), nil
 }
 
-// Less reports whether 'sv1' is less than 'sv2' (https://semver.org/#spec-item-11).
+// Less reports whether 'sv1' is [less] than 'sv2'.
+//
 // If 'sv1' or/and 'sv2' is/are invalid, Less panics.
-// Less is intended for use with sort package.
+// Less is intended for use with [sort] package.
+//
+// [less]: https://semver.org/#spec-item-11
 func Less(sv1, sv2 SemVer) bool {
 	r, err := Compare(sv1, sv2)
 	if err != nil {

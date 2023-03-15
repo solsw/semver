@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// Parse converts the version string to a SemVer.
+// Parse converts the version string to a [SemVer].
 func Parse(s string) (SemVer, error) {
 	ss := strings.SplitN(s, ".", 3)
 	if len(ss) < 3 {

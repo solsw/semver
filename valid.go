@@ -6,8 +6,9 @@ import (
 	"strings"
 )
 
-// Valid checks 'sv' for validity (https://semver.org/#semantic-versioning-specification-semver).
-// If 'sv' is not valid corresponding error is reurned.
+// Valid checks 'sv' for [validity]. If 'sv' is not valid corresponding error is returned.
+//
+// [validity]: https://semver.org/#semantic-versioning-specification-semver
 func Valid(sv SemVer) error {
 	// https://semver.org/#spec-item-2
 	if sv.Major < 0 || sv.Minor < 0 || sv.Patch < 0 {
