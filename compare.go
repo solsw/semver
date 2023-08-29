@@ -33,7 +33,6 @@ func Compare(sv1, sv2 SemVer) (int, error) {
 // Less reports whether 'sv1' is [less] than 'sv2'.
 //
 // If 'sv1' or/and 'sv2' is/are invalid, Less panics.
-// Less is intended for use with [sort] package.
 //
 // [less]: https://semver.org/#spec-item-11
 func Less(sv1, sv2 SemVer) bool {
