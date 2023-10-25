@@ -6,7 +6,6 @@ import (
 )
 
 // Compare [compares] 'sv1' with 'sv2'.
-//
 // Compare returns -1 if 'sv1' is less than 'sv2', 0 if 'sv1' is equal to 'sv2', 1 if 'sv1' is more than 'sv2'.
 //
 // [compares]: https://semver.org/#spec-item-11
@@ -31,7 +30,6 @@ func Compare(sv1, sv2 SemVer) (int, error) {
 }
 
 // Less reports whether 'sv1' is [less] than 'sv2'.
-//
 // If 'sv1' or/and 'sv2' is/are invalid, Less panics.
 //
 // [less]: https://semver.org/#spec-item-11

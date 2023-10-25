@@ -10,28 +10,23 @@ import (
 // [Semantic Versioning Specification]: https://semver.org/#semantic-versioning-specification-semver
 // [zero value]: https://go.dev/ref/spec#The_zero_value
 type SemVer struct {
-
-	// [major version]
+	// Major contains SemVer's [major version].
 	//
 	// [major version]: https://semver.org/#spec-item-8
 	Major int
-
-	// [minor version]
+	// Minor contains SemVer's [minor version].
 	//
 	// [minor version]: https://semver.org/#spec-item-7
 	Minor int
-
-	// [patch version]
+	// Patch contains SemVer's [patch version].
 	//
 	// [patch version]: https://semver.org/#spec-item-6
 	Patch int
-
-	// [pre-release version]
+	// PreRelease contains SemVer's [pre-release version].
 	//
 	// [pre-release version]: https://semver.org/#spec-item-9
 	PreRelease string
-
-	// [build metadata]
+	// Build contains SemVer's [build metadata].
 	//
 	// [build metadata]: https://semver.org/#spec-item-10
 	Build string
