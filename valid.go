@@ -2,9 +2,22 @@ package semver
 
 import (
 	"errors"
-	"strconv"
 	"strings"
 )
+
+// isNumeric reports whether s is a non-empty string of ASCII digits only.
+// Such strings are "numeric identifiers" per https://semver.org/#spec-item-11.
+func isNumeric(s string) bool {
+	if len(s) == 0 {
+		return false
+	}
+	for _, r := range s {
+		if r < '0' || r > '9' {
+			return false
+		}
+	}
+	return true
+}
 
 // Valid checks 'sv' for [validity]. If 'sv' is not valid corresponding error is returned.
 //
@@ -51,12 +64,10 @@ func validIdent(ident string, preRelease bool) error {
 			return errors.New("malformed semver")
 		}
 	}
-	if preRelease {
-		if _, err := strconv.Atoi(ident); err == nil {
-			// numeric identifier
-			if strings.HasPrefix(ident, "0") {
-				return errors.New("malformed semver")
-			}
+	if preRelease && isNumeric(ident) {
+		// numeric identifier must not have leading zeros
+		if strings.HasPrefix(ident, "0") {
+			return errors.New("malformed semver")
 		}
 	}
 	return nil

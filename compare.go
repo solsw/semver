@@ -1,7 +1,6 @@
 package semver
 
 import (
-	"strconv"
 	"strings"
 )
 
@@ -60,27 +59,35 @@ func comparePreRelease(pr1, pr2 string) int {
 	}
 	ids1 := strings.Split(pr1, ".")
 	ids2 := strings.Split(pr2, ".")
-	min := len(ids1)
-	if len(ids2) < min {
-		min = len(ids2)
+	shorter := len(ids1)
+	if len(ids2) < shorter {
+		shorter = len(ids2)
 	}
-	for i := 0; i < min; i++ {
-		n1, er1 := strconv.Atoi(ids1[i])
-		n2, er2 := strconv.Atoi(ids2[i])
-		// https://semver.org/#spec-item-11 (4.1)
-		if er1 == nil && er2 == nil && n1 != n2 {
-			return boolToCompareResult(n1 > n2)
-		}
-		// https://semver.org/#spec-item-11 (4.3)
-		if er1 == nil && er2 != nil {
+	for i := 0; i < shorter; i++ {
+		id1, id2 := ids1[i], ids2[i]
+		num1, num2 := isNumeric(id1), isNumeric(id2)
+		switch {
+		case num1 && num2:
+			// https://semver.org/#spec-item-11 (4.1): compare numerically.
+			// Identifiers are validated to have no leading zeros, so the
+			// longer digit string is the larger number; equal lengths
+			// compare lexically. This avoids integer overflow.
+			if len(id1) != len(id2) {
+				return boolToCompareResult(len(id1) > len(id2))
+			}
+			if id1 != id2 {
+				return boolToCompareResult(id1 > id2)
+			}
+		case num1 && !num2:
+			// https://semver.org/#spec-item-11 (4.3)
 			return -1
-		}
-		if er1 != nil && er2 == nil {
+		case !num1 && num2:
 			return 1
-		}
-		// https://semver.org/#spec-item-11 (4.2)
-		if ids1[i] != ids2[i] {
-			return boolToCompareResult(ids1[i] > ids2[i])
+		default:
+			// https://semver.org/#spec-item-11 (4.2): both alphanumeric.
+			if id1 != id2 {
+				return boolToCompareResult(id1 > id2)
+			}
 		}
 	}
 	// https://semver.org/#spec-item-11 (4.4)

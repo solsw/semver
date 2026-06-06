@@ -2,6 +2,7 @@ package semver
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -26,23 +27,22 @@ func Parse(s string) (SemVer, error) {
 	return sv, nil
 }
 
-func strToVersionNumber(s string) (int, error) {
-	if len(s) == 0 {
+func strToVersionNumber(s string) (int64, error) {
+	// https://semver.org/#spec-item-2: digits only, no sign, no leading zeros.
+	if !isNumeric(s) {
 		return 0, errors.New("malformed semver")
 	}
-	// https://semver.org/#spec-item-2
 	if s == "0" {
 		return 0, nil
 	}
 	if strings.HasPrefix(s, "0") {
 		return 0, errors.New("malformed semver")
 	}
-	ver, err := strconv.Atoi(s)
+	// isNumeric guarantees no sign, so any error here is an overflow.
+	// ParseInt with bitSize 64 keeps parsing independent of the platform int width.
+	ver, err := strconv.ParseInt(s, 10, 64)
 	if err != nil {
-		return 0, err
-	}
-	if ver < 0 {
-		return 0, errors.New("malformed semver")
+		return 0, fmt.Errorf("malformed semver (%w)", err)
 	}
 	return ver, nil
 }

@@ -112,6 +112,25 @@ func TestCompare(t *testing.T) {
 			args: args{sv1: parseMust("1.0.0+alpha"), sv2: parseMust("1.0.0")},
 			want: 0,
 		},
+		// Hyphenated identifier is alphanumeric, not numeric.
+		// Spec 11.4.3: numeric identifiers have lower precedence than alphanumeric.
+		{name: "21",
+			args: args{sv1: SemVer{Major: 1, PreRelease: "-1"}, sv2: SemVer{Major: 1, PreRelease: "1"}},
+			want: 1,
+		},
+		{name: "22",
+			args: args{sv1: SemVer{Major: 1, PreRelease: "1"}, sv2: SemVer{Major: 1, PreRelease: "-1"}},
+			want: -1,
+		},
+		// Large numeric identifiers must compare numerically (spec 11.4.1), no int overflow.
+		{name: "23",
+			args: args{sv1: SemVer{Major: 1, PreRelease: "10000000000000000000000"}, sv2: SemVer{Major: 1, PreRelease: "9999999999999999999999"}},
+			want: 1,
+		},
+		{name: "24",
+			args: args{sv1: SemVer{Major: 1, PreRelease: "9999999999999999999999"}, sv2: SemVer{Major: 1, PreRelease: "10000000000000000000000"}},
+			want: -1,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

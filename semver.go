@@ -13,15 +13,15 @@ type SemVer struct {
 	// Major contains SemVer's [major version].
 	//
 	// [major version]: https://semver.org/#spec-item-8
-	Major int
+	Major int64
 	// Minor contains SemVer's [minor version].
 	//
 	// [minor version]: https://semver.org/#spec-item-7
-	Minor int
+	Minor int64
 	// Patch contains SemVer's [patch version].
 	//
 	// [patch version]: https://semver.org/#spec-item-6
-	Patch int
+	Patch int64
 	// PreRelease contains SemVer's [pre-release version].
 	//
 	// [pre-release version]: https://semver.org/#spec-item-9
@@ -33,6 +33,9 @@ type SemVer struct {
 }
 
 // String implements the [fmt.Stringer] interface.
+// String does not validate 'v', so an invalid [SemVer]
+// (e.g. with negative fields) may produce an invalid version string.
+// Use [SemVer.IsValid] to check 'v' beforehand.
 func (v SemVer) String() string {
 	s := fmt.Sprintf("%d.%d.%d", v.Major, v.Minor, v.Patch)
 	if len(v.PreRelease) > 0 {
@@ -45,6 +48,9 @@ func (v SemVer) String() string {
 }
 
 // MarshalText implements the [encoding.TextMarshaler] interface.
+// Like [SemVer.String], MarshalText does not validate 'v' and never
+// returns an error; an invalid [SemVer] may marshal to invalid text.
+// Use [SemVer.IsValid] to check 'v' beforehand.
 func (v SemVer) MarshalText() ([]byte, error) {
 	return []byte(v.String()), nil
 }
