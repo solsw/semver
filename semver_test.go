@@ -52,6 +52,46 @@ func TestSemVer_String(t *testing.T) {
 	}
 }
 
+func TestSemVer_EqualTo(t *testing.T) {
+	tests := []struct {
+		name    string
+		v       SemVer
+		other   SemVer
+		want    bool
+		wantErr bool
+	}{
+		{name: "invalid receiver", v: SemVer{Major: -1}, wantErr: true},
+		{name: "invalid argument", other: SemVer{Major: -1}, wantErr: true},
+		{name: "equal precedence", v: SemVer{Build: "first"}, other: SemVer{Build: "second"}, want: true},
+		{name: "different precedence", other: SemVer{Patch: 1}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.v.EqualTo(tt.other)
+			if got != tt.want || (err != nil) != tt.wantErr {
+				t.Errorf("EqualTo() = (%v, %v), want equal=%v, wantErr=%v", got, err, tt.want, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestSemVer_UnmarshalTextReceiver(t *testing.T) {
+	var v SemVer
+	want := SemVer{Major: 1, Minor: 2, Patch: 3, PreRelease: "rc.1", Build: "001"}
+	if err := v.UnmarshalText([]byte("1.2.3-rc.1+001")); err != nil {
+		t.Fatal(err)
+	}
+	if v != want {
+		t.Fatalf("after successful decode got %#v, want %#v", v, want)
+	}
+	if err := v.UnmarshalText([]byte("4.5.6+")); err == nil {
+		t.Fatal("expected an error for empty build metadata")
+	}
+	if v != want {
+		t.Errorf("after failed decode got %#v, want %#v", v, want)
+	}
+}
+
 func TestSemVer_UnmarshalText(t *testing.T) {
 	type args struct {
 		text []byte

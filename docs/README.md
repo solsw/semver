@@ -26,10 +26,10 @@ type SemVer struct {
 
 The zero value of `SemVer` is the `"0.0.0"` version.
 
-`SemVer` implements [`fmt.Stringer`](https://pkg.go.dev/fmt#Stringer),
-[`encoding.TextMarshaler`](https://pkg.go.dev/encoding#TextMarshaler) and
-[`encoding.TextUnmarshaler`](https://pkg.go.dev/encoding#TextUnmarshaler),
-so it can be used directly with `fmt` and with JSON, XML, etc.
+`SemVer` implements [`fmt.Stringer`](https://pkg.go.dev/fmt#Stringer) and
+[`encoding.TextMarshaler`](https://pkg.go.dev/encoding#TextMarshaler).
+A pointer (`*SemVer`) implements [`encoding.TextUnmarshaler`](https://pkg.go.dev/encoding#TextUnmarshaler),
+so a JSON string such as `"1.2.3-rc.1"` can be decoded directly into a version.
 
 > `String` and `MarshalText` do not validate the receiver. An invalid `SemVer`
 > (e.g. with negative fields) may produce an invalid version string. Use
@@ -68,18 +68,18 @@ func main() {
 
 ### Functions
 
-- `Parse(s string) (SemVer, error)` — convert a version string to a `SemVer`.
-- `Valid(sv SemVer) error` — report whether `sv` is valid (returns the corresponding error otherwise).
-- `Compare(sv1, sv2 SemVer) (int, error)` — compare two versions; returns `-1`, `0` or `1`.
+- `Parse(s string) (SemVer, error)` — convert a version string to a `SemVer`. The major, minor, and patch numbers must each fit in a non-negative `int64`.
+- `Valid(sv SemVer) error` — return `nil` for a valid version or a validation error for an invalid one.
+- `Compare(sv1, sv2 SemVer) (int, error)` — return `-1`, `0`, or `1` for lower, equal, or higher precedence. If either version is invalid, return `0` and a validation error.
 - `Less(sv1, sv2 SemVer) bool` — report whether `sv1` is less than `sv2` (panics on an invalid version).
 
 ### Methods
 
 - `(v SemVer) String() string`
 - `(v SemVer) MarshalText() ([]byte, error)`
-- `(v *SemVer) UnmarshalText(text []byte) error`
+- `(v *SemVer) UnmarshalText(text []byte) error` — parse the text and replace all fields on success. On a parse error, `v` retains its previous value.
 - `(v SemVer) IsValid() bool`
 - `(v SemVer) CompareTo(other SemVer) (int, error)`
 - `(v SemVer) LessThan(other SemVer) (bool, error)`
-- `(v SemVer) EqualTo(other SemVer) (bool, error)`
+- `(v SemVer) EqualTo(other SemVer) (bool, error)` — report whether the versions have equal precedence. For example, `1.2.3+build.1` and `1.2.3+build.2` compare equal because precedence ignores build metadata. If either version is invalid, return `false` and a validation error.
 - `(v SemVer) MoreThan(other SemVer) (bool, error)`

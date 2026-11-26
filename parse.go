@@ -8,6 +8,7 @@ import (
 )
 
 // Parse converts the version string to a [SemVer].
+// The major, minor, and patch numbers must each fit in a non-negative int64.
 func Parse(s string) (SemVer, error) {
 	ss := strings.SplitN(s, ".", 3)
 	if len(ss) < 3 {

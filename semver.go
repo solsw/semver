@@ -89,11 +89,12 @@ func (v SemVer) LessThan(other SemVer) (bool, error) {
 }
 
 // EqualTo reports whether 'v' is [equal] to 'other'.
+// If either version is invalid, EqualTo returns false and the validation error.
 //
 // [equal]: https://semver.org/#spec-item-11
 func (v SemVer) EqualTo(other SemVer) (bool, error) {
 	r, err := Compare(v, other)
-	return r == 0, err
+	return err == nil && r == 0, err
 }
 
 // MoreThan reports whether 'v' is [more] than 'other'.
